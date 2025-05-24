@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(NoCo)
+
+set(CMAKE_CXX_STANDARD 20)
+
+include_directories(${PROJECT_SOURCE_DIR}/hdr)
+
+file(GLOB pick_src ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
+
+add_executable(NoCo 
+    main.cpp
+    ${pick_src}
+)
