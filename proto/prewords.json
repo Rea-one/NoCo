@@ -1,0 +1,28 @@
+{
+    "keyword": {
+        "if": "if",
+        "else": "else",
+        "for": "for",
+        "while": "while",
+        "return": "return",
+        "break": "break",
+        "do": "do",
+
+        "continue": "continue",
+        "switch": "switch",
+        "case": "case",
+        "default": "default"
+    },
+    "type": {
+        "num": "number",
+        "str": "string",
+        "bool": "boolean",
+        "any": "any",
+        "obj": "object"
+    },
+    "value": {
+        "true": "true",
+        "false": "false",
+        "null": "null"
+    }
+}
