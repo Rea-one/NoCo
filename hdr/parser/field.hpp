@@ -3,9 +3,7 @@
 #include <string>
 #include <memory>
 
-#include "ast.hpp"
 #include "parser/ast.hpp"
-#include "utils/group.hpp"
 
 using normal = std::shared_ptr<Expression>; 
 class Field {
@@ -25,9 +23,9 @@ public:
     void push(normal& target);
     normal pick();
     
-public:
-    normal& operator[](long long index);
-    normal& operator[](std::string ID);
-    const normal& operator[](long long index) const;
-    const normal& operator[](std::string ID) const;
+// public:
+//     normal& operator[](long long index);
+//     normal& operator[](std::string ID);
+//     const normal& operator[](long long index) const;
+//     const normal& operator[](std::string ID) const;
 };

@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "utils/group.hpp"
-
+#include "parser/field.hpp"
 #include "parser/tokenizer.hpp"
 
 class Expression {
@@ -13,9 +13,9 @@ public:
     virtual void action();
 };
 
-class PRJ_AST: public Expression {
+class Action: public Expression {
 public:
-    Group<std::shared_ptr<Expression>> projext_streams{};
+    Group<std::shared_ptr<Expression>> streams{};
     Group<std::shared_ptr<Expression>> units{};
 
     void action();
@@ -39,13 +39,15 @@ public:
 };
 
 class ConditionExpression : public Expression {
+public:
     std::shared_ptr<Expression> conditions;
     std::shared_ptr<Expression> actions;
     virtual void action() override;
 };
 
 class LoopExpression : public Expression {
-    std::shared_ptr<Expression> condition{};
+public:
+    std::shared_ptr<Expression> conditions{};
     std::shared_ptr<Expression> actions{};
 
     virtual void action() override;
@@ -54,24 +56,28 @@ class LoopExpression : public Expression {
 class FunctionExpression : public Expression {
 public:
     std::string name{};
-    std::vector<std::shared_ptr<Expression>> args{};
-    std::vector<std::shared_ptr<Expression>> actions{};
+    Group<std::shared_ptr<Expression>> args{};
+    Group<std::shared_ptr<Expression>> actions{};
     // 返回值为实时生成的，这里用非指针表示
-    std::vector<Expression> returns{};
+    Group<std::shared_ptr<Expression>> returns{};
 
     virtual void action() override;
 };
 
 class Parser { 
-private:
-    Group<std::shared_ptr<Expression>> memory;
+protected:
+    Field memory;
 public:
     static Parser& getInstance();
     
     std::shared_ptr<Expression> Ana(Token& tokens);
+    std::shared_ptr<Expression> Ana_action(Token& tokens);
     std::shared_ptr<Expression> Ana_value(Token& tokens);
     std::shared_ptr<Expression> Ana_binopr(Token& tokens);
     std::shared_ptr<Expression> Ana_condition(Token& tokens);
     std::shared_ptr<Expression> Ana_loop(Token& tokens);
     std::shared_ptr<Expression> Ana_function(Token& tokens);
+    
+public:
+    Group<std::shared_ptr<Expression>> scanBunch(Token& tokens, std::string end);
 };

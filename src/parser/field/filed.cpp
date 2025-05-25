@@ -27,6 +27,28 @@ normal Field::get(long long index) {
     if (index < targets.size()) {
         return targets.get(index);
     }
-    auto result = targets.get(dangle);
-    // TODO
+    return targets.get(dangle);
+}
+
+normal Field::get(std::string ID) {
+    return targets.get(dangle);
+}
+
+normal Field::take(long long index) {
+    if (index < targets.size()) {
+        return targets.take(index);
+    }
+    return  targets.take(dangle);
+}
+
+normal Field::take(std::string ID) {
+    return targets.take(dangle);
+}
+
+void Field::push(normal& target) {
+    targets.push(target);
+}
+
+normal Field::pick() {
+    return targets.pick();
 }
