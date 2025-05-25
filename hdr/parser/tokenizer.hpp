@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 
-#include "util/token.hpp"
+#include "utils/token_gen.hpp"
 
 
 class Tokenizer {
@@ -18,5 +18,9 @@ protected:
     std::vector<std::string> tokens{};
 
 public:
-    std::string consume();
+    bool empty();
+
+public:
+    std::string get();
+    std::string take();
 };

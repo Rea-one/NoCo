@@ -1,4 +1,4 @@
-#include "util/token.hpp"
+#include "utils/token_gen.hpp"
 
 static std::unordered_map<char, std::string> token_map = {
     {'+', "operator"},

@@ -1,10 +1,23 @@
+#pragma once
 #include <vector>
 #include <string>
 #include <memory>
 
+#include "utils/skgroup.hpp"
+#include "parser/tokenizer.hpp"
+
 class Expression {
 public:
+    long long ID;
     virtual void action();
+};
+
+class PRJ_AST: public Expression {
+public:
+    Group<std::shared_ptr<Expression>> projext_streams{};
+    Group<std::shared_ptr<Expression>> units{};
+
+    void action();
 };
 
 class ValueExpression : public Expression {
@@ -17,6 +30,7 @@ public:
 
 class BinoprExpression : public Expression {
 public:
+    std::string opr{};
     std::shared_ptr<Expression> left{};
     std::shared_ptr<Expression> right{};
 
@@ -48,11 +62,15 @@ public:
 };
 
 class Parser { 
+private:
+    SkGroup<std::shared_ptr<Expression>> memory;
 public:
-    static std::shared_ptr<Expression> Ana(std::vector<std::string>& tokens);
-    static std::shared_ptr<Expression> Ana_value(std::vector<std::string>& tokens);
-    static std::shared_ptr<Expression> Ana_binopr(std::vector<std::string>& tokens);
-    static std::shared_ptr<Expression> Ana_condition(std::vector<std::string>& tokens);
-    static std::shared_ptr<Expression> Ana_loop(std::vector<std::string>& tokens);
-    static std::shared_ptr<Expression> Ana_function(std::vector<std::string>& tokens);
+    static Parser& getInstance();
+    
+    std::shared_ptr<Expression> Ana(Token& tokens);
+    std::shared_ptr<Expression> Ana_value(Token& tokens);
+    std::shared_ptr<Expression> Ana_binopr(Token& tokens);
+    std::shared_ptr<Expression> Ana_condition(Token& tokens);
+    std::shared_ptr<Expression> Ana_loop(Token& tokens);
+    std::shared_ptr<Expression> Ana_function(Token& tokens);
 };

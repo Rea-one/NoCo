@@ -1,4 +1,4 @@
-#include "pick/tokenizer.hpp"
+#include "parser/tokenizer.hpp"
 
 
 Tokenizer::Tokenizer() {
@@ -6,7 +6,7 @@ Tokenizer::Tokenizer() {
 }
 
 Tokenizer::~Tokenizer() {
-
+    
 }
 
 void Tokenizer::Read(std::string words) { 
