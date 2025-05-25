@@ -21,7 +21,7 @@
  * const T& operator[](std::string ID) const: 常量版本的ID访问
  * const T& operator[](long long index) const: 常量版本的索引访问
  */
-#pragma once
+
 #include <cassert>
 #include <queue>
 #include <vector>
@@ -50,6 +50,7 @@ protected:
             return; // 避免重复注册
         }
         fast[ID] = index;
+
         defast[index] = ID;
         _size++;
     }
@@ -63,6 +64,7 @@ protected:
         fast.erase(ID);
         defast.erase(index);
         free.push(index); // 将索引加入空闲队列
+
         _size--;
         return true;
     }
@@ -71,15 +73,17 @@ protected:
         if (defast.find(index) == defast.end()) {
             return false;
         }
+
         std::string ID = defast[index];
         the[index] = T();
         defast.erase(index);
         fast.erase(ID);
         free.push(index); // 将索引加入空闲队列
+
         _size--;
         return true;
     }
-
+    
     void shorten() { 
         while (_size > 0 && defast.find(_size - 1) == defast.end()) {
             _size--;
@@ -99,11 +103,11 @@ protected:
         }
         return -1;
     }
-
+    
 public:
     bool empty() { return _size == 0; }
     long long size() { return _size; }
-
+    
     int freeSize() { return free.size(); }
 
 public:
@@ -143,12 +147,14 @@ public:
         }
         auto result = std::move(get(ID));
         free.push(fast[ID]);
+
         unregisterItem(ID);
         return result;
     }
 
     T take(long long index) {
         if (index >= the.size() || defast.find(index) == defast.end()) {
+
             return T();
         }
         auto result = std::move(get(index));
@@ -156,7 +162,7 @@ public:
         unregisterItem(index);
         return result;
     }
-    
+
     void push(T tar) {
         registerItem(tar.ID, the.size());
         the.push_back(tar);
