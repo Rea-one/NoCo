@@ -1,13 +1,11 @@
 #include "utils/token_gen.hpp"
 
-
-
 std::string GetType(char c) {
     // 数字字面量（包含十六进制、二进制前缀检测）
     if (isdigit(c)) {
         return "number";
     }
-    
+
     // 字符串字面量起始符
     if (c == '"') {
         return "string";

@@ -12,7 +12,7 @@ static long long ExpressionID = 0;
 class Expression {
 public:
     std::string ID = std::to_string(ExpressionID++);
-    std::string name;
+    TokenUnit name;
     virtual void act();
 };
 
@@ -29,14 +29,14 @@ public:
 class Value : public Expression {
 public:
     std::unique_ptr<Expression> value{};
-    std::string type{};
+    TokenUnit type{};
 
     virtual void act() override;
 };
 
 class Binopr : public Expression {
 public:
-    std::string opr{};
+    TokenUnit opr{};
     std::unique_ptr<Expression> left{};
     std::unique_ptr<Expression> right{};
 

@@ -58,7 +58,7 @@ std::unique_ptr<Expression> Parser::Ana_value(Token& tokens) {
     std::unique_ptr<Value> result = std::make_unique<Value>();
     result->type = tokens.take();
     result->name = tokens.take();
-    if (tokens.get() == "=") {
+    if (tokens.pick() == "=") {
         tokens.take();
         result->value = Ana(tokens);
     }
@@ -77,17 +77,17 @@ std::unique_ptr<Expression> Parser::Ana_binopr(Token& tokens) {
 
 std::unique_ptr<Expression> Parser::Ana_condition(Token& tokens) {
     std::unique_ptr<Condition> result = std::make_unique<Condition>();
-    if (tokens.get() == "if") {
-        result->name = "if";
+    if (tokens.pick() == "if") {
+        result->name.token = "if";
         result->conditions = Ana_binopr(tokens);
-        if (tokens.get() == "+>") {
+        if (tokens.pick() == "+>") {
             result->piBranch = Ana(tokens);
-        } else if (tokens.get() == "->") {
+        } else if (tokens.pick() == "->") {
             result->niBranch = Ana(tokens);
         }
-        if (tokens.get() == "+>") {
+        if (tokens.pick() == "+>") {
             result->piBranch = Ana(tokens);
-        } else if (tokens.get() == "->") {
+        } else if (tokens.pick() == "->") {
             result->niBranch = Ana(tokens);
         }
     }
@@ -100,7 +100,7 @@ std::unique_ptr<Expression> Parser::Ana_graph(Token& tokens) {
 
 
 std::unique_ptr<Expression> Parser::Ana_node(Token& tokens) {
-    if (tokens.get() == "node") {
+    if (tokens.pick() == "node") {
         tokens.take();
     }
     std::unique_ptr<Node> result = std::make_unique<Node>();
@@ -113,7 +113,7 @@ std::unique_ptr<Expression> Parser::Ana_node(Token& tokens) {
 Group<std::unique_ptr<Expression>> Parser::scanBunch(Token& tokens, std::string end) { 
     Group<std::unique_ptr<Expression>> result{};
     std::unique_ptr<Expression> rcv{};
-    while (tokens.get() != end) {
+    while (tokens.pick() != end) {
         rcv = Ana(tokens);
         result.submit(rcv);
     }

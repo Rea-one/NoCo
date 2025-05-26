@@ -57,7 +57,7 @@ node State.transition {
                 }
             }
         }
-        
+        // 想设计成支持无return，通过out明确返回
         return current_state
     }
 }

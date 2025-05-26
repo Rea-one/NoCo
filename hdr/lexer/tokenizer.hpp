@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vector>
 #include <string>
 
@@ -6,6 +7,11 @@
 struct TokenUnit {
     std::string token;
     tokenTypes tag;
+    struct Position {
+        int line = 0;
+        int column = 0;
+        int offset = 0;
+    } pos;
 };
 
 class Token {
@@ -15,11 +21,14 @@ protected:
     
 public:
     bool empty();
+    int size();
     
 public:
     void put(TokenUnit& token);
     TokenUnit get();
     TokenUnit take();
+    TokenUnit getNext();
+    std::string pick();
 };
 
 
