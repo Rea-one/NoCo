@@ -4,24 +4,23 @@
 #include <memory>
 
 #include "parser/ast.hpp"
+#include "utils/skgroup.hpp"
 
-using normal = std::shared_ptr<Expression>; 
+using normal = Expression*; 
+static long long FieldID = 0;
 class Field {
 protected:
+    std::string ID = std::to_string(FieldID++);
+
+    Group<Field*> subfields{};
+public:
     normal base{};
     normal root{};
     Group<normal> targets{};
-    long long dangle{};
-    std::vector<std::shared_ptr<Field>> subfields{};
-public:
-    void put(normal& target);
-    bool submit(normal& target);
-    normal get(std::string ID);
-    normal get(long long index);
-    normal take(std::string ID);
-    normal take(long long index);
-    void push(normal& target);
-    normal pick();
+    SkGroup<normal> dangle{};
+    void NewSubField();
+    Field* toNewSub();
+    Field* toRoot();
     
 // public:
 //     normal& operator[](long long index);

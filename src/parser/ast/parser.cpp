@@ -8,124 +8,111 @@ Parser& Parser::getInstance() {
 }
 
 using ty = tokenTypes;
-std::shared_ptr<Expression> Parser::Ana(Token& tokens) {
-    std::shared_ptr<Action> result{};
-    std::shared_ptr<Expression> rcv{};
+std::unique_ptr<Expression> Parser::Ana(Token& tokens) {
+    std::unique_ptr<Node> result{};
+    std::unique_ptr<Expression> rcv{};
     while (!tokens.empty()) {
-        std::string token = tokens.get();
-        tokenTypes type = TokenType(token);
-        switch (type) {
+        auto token = tokens.get();
+        switch (token.tag) {
             case ty::Value:
                 rcv = Ana_value(tokens);
-                result->units.submit(rcv);
+                result->unit.submit(rcv);
                 break;
             case ty::Binopr:
                 rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
+                result->unit.submit(rcv);
                 break;
             case ty::Condition:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
+                rcv = Ana_condition(tokens);
+                result->unit.submit(rcv);
                 break;
-            case ty::Loop:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
                 break;
-            case ty::Function:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
+            case ty::Node:
+                rcv = Ana_node(tokens);
+                result->unit.submit(rcv);
                 break;
+            case ty::SubField:
+                memory = memory->toNewSub();
+                break;
+            case ty::RootField:
+                if (memory == memory->base)
+                    break;
+                memory = memory->toRoot();
+                break;
+            case ty::In:
+                
             case ty::Unknown:
                 rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
+                result->unit.submit(rcv);
                 break;
             default:
                 break;
         }
-
+        if (memory == memory->base)
+                    break;
     }
 }
 
-std::shared_ptr<Expression> Parser::Ana_action(Token& tokens) {
-    std::shared_ptr<Action> result = std::make_shared<Action>();
-    std::shared_ptr<Expression> rcv{};
-    while (!tokens.empty()) {
-        std::string token = tokens.get();
-        tokenTypes type = TokenType(token);
-        switch (type) {
-            case ty::Value:
-                rcv = Ana_value(tokens);
-                result->units.submit(rcv);
-                break;
-            case ty::Binopr:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
-                break;
-            case ty::Condition:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
-                break;
-            case ty::Loop:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
-                break;
-            case ty::Function:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
-                break;
-            case ty::Unknown:
-                rcv = Ana_binopr(tokens);
-                result->units.submit(rcv);
-                break;
-            default:
-                break;
-        }
-    }
-}
 
-std::shared_ptr<Expression> Parser::Ana_value(Token& tokens) {
-    std::shared_ptr<ValueExpression> result = std::make_shared<ValueExpression>();
+std::unique_ptr<Expression> Parser::Ana_value(Token& tokens) {
+    std::unique_ptr<Value> result = std::make_unique<Value>();
     result->type = tokens.take();
-    result->value = tokens.take();
+    result->name = tokens.take();
+    if (tokens.get() == "=") {
+        tokens.take();
+        result->value = Ana(tokens);
+    }
+    memory->targets.submit(result);
     return result;
 }
 
 // 目前这里实现起来有点混乱
-std::shared_ptr<Expression> Parser::Ana_binopr(Token& tokens) {
-    std::shared_ptr<BinoprExpression> result = std::make_shared<BinoprExpression>();
+std::unique_ptr<Expression> Parser::Ana_binopr(Token& tokens) {
+    std::unique_ptr<Binopr> result = std::make_unique<Binopr>();
     result->opr = tokens.take();
-    result->left = memory.pick();
-    auto rcv = Ana_value(tokens);
-    result->right = rcv;
+    result->left = memory->targets.take();
+    result->right = Ana(tokens);
     return result;
 }
 
-std::shared_ptr<Expression> Parser::Ana_condition(Token& tokens) {
-    std::shared_ptr<ConditionExpression> result = std::make_shared<ConditionExpression>();
-    result->conditions = Ana_binopr(tokens);
-    result->actions = Ana_action(tokens);
+std::unique_ptr<Expression> Parser::Ana_condition(Token& tokens) {
+    std::unique_ptr<Condition> result = std::make_unique<Condition>();
+    if (tokens.get() == "if") {
+        result->name = "if";
+        result->conditions = Ana_binopr(tokens);
+        if (tokens.get() == "+>") {
+            result->piBranch = Ana(tokens);
+        } else if (tokens.get() == "->") {
+            result->niBranch = Ana(tokens);
+        }
+        if (tokens.get() == "+>") {
+            result->piBranch = Ana(tokens);
+        } else if (tokens.get() == "->") {
+            result->niBranch = Ana(tokens);
+        }
+    }
     return result;
 }
 
-std::shared_ptr<Expression> Parser::Ana_loop(Token& tokens) {
-    std::shared_ptr<LoopExpression> result = std::make_shared<LoopExpression>();
-    result->conditions = Ana_binopr(tokens);
-    result->actions = Ana_action(tokens);
-    return result;
+std::unique_ptr<Expression> Parser::Ana_graph(Token& tokens) {
+    
 }
 
-std::shared_ptr<Expression> Parser::Ana_function(Token& tokens) {
-    std::shared_ptr<FunctionExpression> result = std::make_shared<FunctionExpression>();
+
+std::unique_ptr<Expression> Parser::Ana_node(Token& tokens) {
+    if (tokens.get() == "node") {
+        tokens.take();
+    }
+    std::unique_ptr<Node> result = std::make_unique<Node>();
     result->name = tokens.take();
-    result->args = scanBunch(tokens, ")");
-    result->actions = scanBunch(tokens, "}");
-    result->returns = Ana_value(tokens);
+    memory->dangle.submit(result);
+    Ana(tokens);
     return result;
 }
 
-Group<std::shared_ptr<Expression>> Parser::scanBunch(Token& tokens, std::string end) { 
-    Group<std::shared_ptr<Expression>> result{};
-    std::shared_ptr<Expression> rcv{};
+Group<std::unique_ptr<Expression>> Parser::scanBunch(Token& tokens, std::string end) { 
+    Group<std::unique_ptr<Expression>> result{};
+    std::unique_ptr<Expression> rcv{};
     while (tokens.get() != end) {
         rcv = Ana(tokens);
         result.submit(rcv);

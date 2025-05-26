@@ -6,7 +6,7 @@ template<typename T>
 class SkGroup : public Group<T> {
 public:
     // 覆盖put方法实现栈顶插入
-    void put(T& tar) override {
+    void put(T& tar) {
         // 注销已有同名ID
         if (this->fast.find(tar.ID) != this->fast.end()) {
             return;
@@ -25,7 +25,7 @@ public:
 
 protected:
     // 覆盖unregisterItem防止栈元素被复用
-    bool unregisterItem(long long index) override {
+    bool unregisterItem(long long index) {
         if (this->defast.find(index) == this->defast.end()) return false;
         // 清除元素但不加入空闲队列
         this->the[index] = T();

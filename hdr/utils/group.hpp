@@ -15,6 +15,7 @@
  * T take(long long index): 取出并删除指定索引的元素
  * void push(T tar): 强制追加新元素到末尾
  * T pick() const: 获取最后一个有效元素（不删除）
+ * void pock() 弹出最后一个有效元素
  * 【操作符重载】
  * T& operator[](std::string ID): 通过ID访问元素（带断言检查）
  * T& operator[](long long index): 通过索引访问元素（带断言检查）

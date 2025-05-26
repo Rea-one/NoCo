@@ -5,79 +5,67 @@
 
 #include "utils/group.hpp"
 #include "parser/field.hpp"
-#include "parser/tokenizer.hpp"
+#include "lexer/tokenizer.hpp"
+
+static long long ExpressionID = 0;
 
 class Expression {
 public:
-    long long ID;
-    virtual void action();
+    std::string ID = std::to_string(ExpressionID++);
+    std::string name;
+    virtual void act();
 };
 
-class Action: public Expression {
+class Node : public Expression {
 public:
-    Group<std::shared_ptr<Expression>> streams{};
-    Group<std::shared_ptr<Expression>> units{};
+    Group<std::unique_ptr<Expression>> in{};
+    Group<std::unique_ptr<Expression>> out{};
+    Group<std::unique_ptr<Expression>> unit{};
+    Group<std::unique_ptr<Expression>> stream{}; 
 
-    void action();
+    void act();
 };
 
-class ValueExpression : public Expression {
+class Value : public Expression {
 public:
-    std::string value{};
+    std::unique_ptr<Expression> value{};
     std::string type{};
 
-    virtual void action() override;
+    virtual void act() override;
 };
 
-class BinoprExpression : public Expression {
+class Binopr : public Expression {
 public:
     std::string opr{};
-    std::shared_ptr<Expression> left{};
-    std::shared_ptr<Expression> right{};
+    std::unique_ptr<Expression> left{};
+    std::unique_ptr<Expression> right{};
 
-    virtual void action() override;
+    virtual void act() override;
 };
 
-class ConditionExpression : public Expression {
+class Condition : public Expression {
 public:
-    std::shared_ptr<Expression> conditions;
-    std::shared_ptr<Expression> actions;
-    virtual void action() override;
+    std::unique_ptr<Expression> conditions{};
+    std::unique_ptr<Expression> piBranch{};
+    std::unique_ptr<Expression> niBranch{};
+    virtual void act() override;
 };
 
-class LoopExpression : public Expression {
-public:
-    std::shared_ptr<Expression> conditions{};
-    std::shared_ptr<Expression> actions{};
 
-    virtual void action() override;
-};
-
-class FunctionExpression : public Expression {
-public:
-    std::string name{};
-    Group<std::shared_ptr<Expression>> args{};
-    Group<std::shared_ptr<Expression>> actions{};
-    // 返回值为实时生成的，这里用非指针表示
-    Group<std::shared_ptr<Expression>> returns{};
-
-    virtual void action() override;
-};
 
 class Parser { 
 protected:
-    Field memory;
+    Field* memory = new Field();
 public:
     static Parser& getInstance();
     
-    std::shared_ptr<Expression> Ana(Token& tokens);
-    std::shared_ptr<Expression> Ana_action(Token& tokens);
-    std::shared_ptr<Expression> Ana_value(Token& tokens);
-    std::shared_ptr<Expression> Ana_binopr(Token& tokens);
-    std::shared_ptr<Expression> Ana_condition(Token& tokens);
-    std::shared_ptr<Expression> Ana_loop(Token& tokens);
-    std::shared_ptr<Expression> Ana_function(Token& tokens);
-    
+    std::unique_ptr<Expression> Ana(Token& tokens);
+    std::unique_ptr<Expression> Ana_value(Token& tokens);
+    std::unique_ptr<Expression> Ana_binopr(Token& tokens);
+    std::unique_ptr<Expression> Ana_condition(Token& tokens);
+    std::unique_ptr<Expression> Ana_node(Token& tokens);
+    std::unique_ptr<Expression> Ana_graph(Token& tokens);
+    std::unique_ptr<Expression> Ana_call(Token& tokens);
 public:
-    Group<std::shared_ptr<Expression>> scanBunch(Token& tokens, std::string end);
+    Group<std::unique_ptr<Expression>> scanBunch(Token& tokens, std::string end);
 };
