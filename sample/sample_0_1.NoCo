@@ -1,0 +1,54 @@
+// vector.NoCo
+module vector
+
+class Vector<T> = {
+    have {
+        num[] data;
+        num size;
+        num capacity;
+        node put;
+        node get;
+        node take;
+        node [];
+    }
+    node put = {
+        in {T the_data};
+        out {void};
+        action {
+            if size_check = {
+                size >= capacity
+                +> {
+                    capacity = capacity * 2;
+                    new_data = new num[capacity];
+                    loop {
+                        born {num order = 0};
+                        order < size;
+                        +> {
+                            new_data[order] = data[order];
+                            order = order + 1;
+                        }
+                        -> {
+                            data = new_data;
+                            break 1;
+                        }
+                    }
+                }
+            }
+            size_check();
+        };
+    }
+    node get = {
+        
+    }
+}
+
+
+// group.NoCo
+module group
+
+class Group<T> = {
+    have {
+        num ID;
+
+    }
+}
