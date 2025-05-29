@@ -53,19 +53,29 @@ public:
 
 
 
+using pe = std::unique_ptr<Expression>;
 class Parser { 
 protected:
     Field* memory = new Field();
 public:
     static Parser& getInstance();
     
-    std::unique_ptr<Expression> Ana(Token& tokens);
-    std::unique_ptr<Expression> Ana_value(Token& tokens);
-    std::unique_ptr<Expression> Ana_binopr(Token& tokens);
-    std::unique_ptr<Expression> Ana_condition(Token& tokens);
-    std::unique_ptr<Expression> Ana_node(Token& tokens);
-    std::unique_ptr<Expression> Ana_graph(Token& tokens);
-    std::unique_ptr<Expression> Ana_call(Token& tokens);
+    pe Ana(Token& tokens);
+    pe Ana_value(Token& tokens);
+    pe Ana_binopr(Token& tokens);
+    pe Ana_if(Token& tokens);
+    pe Ana_node(Token& tokens);
+    pe Ana_graph(Token& tokens);
+    pe Ana_call(Token& tokens);
+    pe Ana_paren(Token& tokens);
+    pe Ana_square(Token& tokens);
+    pe Ana_curl(Token& tokens);
+    pe Ana_field(Token& tokens);
+
+    pe read_in(Token& tokens);
+    pe read_out(Token& tokens);
+    pe read_locate(Token& tokens);
+
 public:
-    Group<std::unique_ptr<Expression>> scanBunch(Token& tokens, std::string end);
+    Group<pe> scanBunch(Token& tokens, std::string end);
 };
