@@ -123,7 +123,44 @@ Group<pe> Parser::scanBunch(Token& tokens, std::string end) {
 }
 
 pe Parser::Ana_paren(Token& tokens) {
-
+    tokens.pick();
+    while (tokens.pick() != ")") {
+        switch (token.tag) {
+            case ty::Value:
+                rcv = Ana_value(tokens);
+                result->unit.submit(rcv);
+                break;
+            case ty::Binopr:
+                rcv = Ana_binopr(tokens);
+                result->unit.submit(rcv);
+                break;
+            case ty::Condition:
+                rcv = Ana_if(tokens);
+                result->unit.submit(rcv);
+                break;
+                break;
+            case ty::Node:
+                rcv = Ana_node(tokens);
+                result->unit.submit(rcv);
+                break;
+            case ty::SubField:
+                memory = memory->toNewSub();
+                break;
+            case ty::RootField:
+                if (memory == memory->base)
+                    break;
+                memory = memory->toRoot();
+                break;
+            case ty::In:
+                
+            case ty::Unknown:
+                rcv = Ana_binopr(tokens);
+                result->unit.submit(rcv);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 pe Parser::Ana_square(Token& tokens) {
