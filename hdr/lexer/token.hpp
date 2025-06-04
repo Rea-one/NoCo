@@ -2,10 +2,11 @@
 #include <vector>
 #include <string>
 
-#include "parser/ast.hpp"
-#include "utils/token_gen.hpp"
+#include "lexer/token_gen.hpp"
 #include "utils/cursor.hpp"
 
+
+using ll = long long;
 struct TokenUnit {
     std::string token;
     tokenTypes type;
@@ -18,9 +19,16 @@ struct TokenUnit {
 class Token {
 protected:
     Cursor<TokenUnit> tokens{};    
-public:    
 public:
-    void put(TokenUnit& token);
+    bool atEnd();
+public:
+    ll move(ll walk);
+    ll Move(ll walk);
+    ll prior();
+    ll Prior();
+    ll next();
+    ll Next();
+public:
     TokenUnit get();
     TokenUnit take();
     TokenUnit getNext();

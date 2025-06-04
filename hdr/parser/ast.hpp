@@ -5,7 +5,7 @@
 
 #include "utils/group.hpp"
 #include "parser/field.hpp"
-#include "lexer/tokenizer.hpp"
+#include "lexer/token.hpp"
 
 static long long ExpressionID = 0;
 
@@ -60,6 +60,7 @@ protected:
 public:
     static Parser& getInstance();
     
+    pe Ana_up(Token& tokens);
     pe Ana(Token& tokens);
     pe Ana_value(Token& tokens);
     pe Ana_binopr(Token& tokens);

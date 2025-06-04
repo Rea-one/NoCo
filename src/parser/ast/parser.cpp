@@ -1,8 +1,7 @@
+#include "lexer/token_gen.hpp"
 #include "parser/ast.hpp"
 #include "utils/token_gen.hpp"
 #include <memory>
-
-using pe = std::unique_ptr<Expression>;
 
 Parser& Parser::getInstance() {
     static Parser instance;
@@ -10,17 +9,18 @@ Parser& Parser::getInstance() {
 }
 
 using ty = tokenTypes;
-pe Parser::Ana(Token& tokens) {
+using st = abstractType;
+pe Parser::Ana_up(Token& tokens) {
     std::unique_ptr<Node> result{};
     pe rcv{};
-    while (!tokens.empty()) {
+    while (!tokens.atEnd()) {
         auto token = tokens.get();
-        switch (token.tag) {
-            case ty::Value:
+        switch (abstract[token.type]) {
+            case st::Explain:
                 rcv = Ana_value(tokens);
                 result->unit.submit(rcv);
                 break;
-            case ty::Binopr:
+            case :
                 rcv = Ana_binopr(tokens);
                 result->unit.submit(rcv);
                 break;
